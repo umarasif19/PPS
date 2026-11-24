@@ -1,0 +1,740 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midterm HQ | Student Dashboard</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f1f5f9;
+    color: #172033;
+    min-height: 100vh;
+}
+
+button, input, textarea, select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    background: #315efb;
+    color: white;
+    font-weight: bold;
+}
+
+button:hover {
+    opacity: .85;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin: 7px 0 14px;
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+    outline: none;
+    background: white;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 75px;
+}
+
+.login-screen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-box {
+    background: white;
+    width: 100%;
+    max-width: 400px;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px #17203315;
+}
+
+.login-box h1 {
+    margin-bottom: 8px;
+    color: #315efb;
+}
+
+.login-box p {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+
+.error {
+    color: #dc2626;
+    margin-bottom: 12px;
+}
+
+.dashboard {
+    display: none;
+}
+
+header {
+    background: #172c46;
+    color: white;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+header h2 {
+    color: #8eb1ff;
+}
+
+header button {
+    background: #ef4444;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+.welcome {
+    margin-bottom: 25px;
+}
+
+.welcome h1 {
+    margin-bottom: 8px;
+}
+
+.muted {
+    color: #64748b;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat, .panel {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px #17203308;
+}
+
+.stat h2 {
+    color: #315efb;
+    font-size: 28px;
+    margin-top: 8px;
+}
+
+.panel {
+    margin-bottom: 22px;
+}
+
+.panel h2 {
+    margin-bottom: 18px;
+}
+
+.course-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.course-item {
+    background: #edf2ff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #2446b5;
+    font-weight: bold;
+}
+
+.small-btn {
+    padding: 5px 9px;
+    font-size: 12px;
+}
+
+.delete-btn {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.edit-btn {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.entry {
+    border: 1px solid #e2e8f0;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.entry h3 {
+    margin-bottom: 10px;
+}
+
+.entry p {
+    margin: 8px 0;
+    color: #475569;
+}
+
+.objective {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 11px;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.done {
+    color: #15803d;
+}
+
+.not-done {
+    color: #dc2626;
+}
+
+.objective span {
+    font-size: 14px;
+}
+
+.objective button {
+    white-space: nowrap;
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+.progress-bg {
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 20px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #22c55e;
+    width: 0%;
+    transition: .3s;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.empty {
+    color: #94a3b8;
+    padding: 15px 0;
+}
+
+@media(max-width:650px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    header {
+        padding: 18px;
+    }
+
+    .objective {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <h1>📚 MIDTERM HQ</h1>
+        <p>Your personal examination preparation system.</p>
+
+        <form id="loginForm">
+            <label>Username</label>
+            <input id="username" placeholder="Enter username" required>
+
+            <label>Password</label>
+            <input id="password" type="password"
+                   placeholder="Enter password" required>
+
+            <p class="error" id="error"></p>
+
+            <button type="submit" style="width:100%">
+                Login to Dashboard →
+            </button>
+        </form>
+    </div>
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div class="dashboard" id="dashboard">
+
+<header>
+    <h2>MIDTERM HQ</h2>
+    <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+    <div class="welcome">
+        <h1 id="welcomeName">Welcome!</h1>
+        <p class="muted" id="todayDate"></p>
+        <p class="muted">Your preparation. Your responsibility.</p>
+    </div>
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+        <div class="stat">
+            <p class="muted">Total Courses</p>
+            <h2 id="totalCourses">0</h2>
+        </div>
+
+        <div class="stat">
+            <p class="muted">Completed Objectives</p>
+            <h2 id="completedTasks">0</h2>
+        </div>
+
+        <div class="stat">
+            <p class="muted">Overall Progress</p>
+            <h2 id="overallProgress">0%</h2>
+        </div>
+    </div>
+
+
+    <!-- COURSES -->
+
+    <div class="panel">
+        <h2>📖 My Courses</h2>
+
+        <div class="form-grid">
+            <div>
+                <label>Add a course</label>
+                <input id="courseName"
+                       placeholder="e.g. Mathematics">
+            </div>
+            <div style="display:flex;align-items:center">
+                <button onclick="addCourse()"
+                        style="margin-top:10px">
+                    + Add Course
+                </button>
+            </div>
+        </div>
+
+        <div class="course-list" id="courseList"></div>
+    </div>
+
+
+    <!-- DAILY ENTRY -->
+
+    <div class="panel">
+        <h2>📝 Record Today's Study</h2>
+
+        <label>Select Course</label>
+        <select id="studyCourse"></select>
+
+        <label>Date</label>
+        <input type="date" id="studyDate">
+
+        <label>Topics Covered Today</label>
+        <textarea id="topics"
+                  placeholder="What did you study today?"></textarea>
+
+        <label>Plan for the Day</label>
+        <textarea id="plan"
+                  placeholder="What did you plan to accomplish?"></textarea>
+
+        <label>Objectives (Write one objective per line)</label>
+        <textarea id="objectives"
+                  placeholder="Complete chapter 1&#10;Solve 10 questions&#10;Revise lecture notes"></textarea>
+
+        <button onclick="addEntry()">Save Study Record</button>
+    </div>
+
+
+    <!-- STUDY RECORDS -->
+
+    <div class="panel">
+        <h2>📅 My Daily Study Records</h2>
+        <div id="entries"></div>
+    </div>
+
+</div>
+</div>
+
+
+<script>
+
+// THREE STUDENT ACCOUNTS
+// Change usernames and passwords here.
+
+const users = {
+    "student1": "1234",
+    "student2": "2345",
+    "student3": "3456"
+};
+
+let currentUser = null;
+let data = {};
+
+function storageKey() {
+    return "midtermHQ_" + currentUser;
+}
+
+function loadData() {
+    data = JSON.parse(localStorage.getItem(storageKey())) || {
+        courses: [],
+        entries: []
+    };
+
+    render();
+}
+
+function saveData() {
+    localStorage.setItem(storageKey(), JSON.stringify(data));
+    render();
+}
+
+
+// LOGIN
+
+document.getElementById("loginForm")
+.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    if (users[username] && users[username] === password) {
+
+        currentUser = username;
+
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+
+        document.getElementById("welcomeName").innerText =
+            "Welcome, " + username + " 👋";
+
+        document.getElementById("todayDate").innerText =
+            new Date().toDateString();
+
+        loadData();
+
+    } else {
+        document.getElementById("error").innerText =
+            "Incorrect username or password!";
+    }
+});
+
+function logout() {
+    currentUser = null;
+
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("loginScreen").style.display = "flex";
+
+    document.getElementById("loginForm").reset();
+    document.getElementById("error").innerText = "";
+}
+
+
+// COURSES
+
+function addCourse() {
+    const input = document.getElementById("courseName");
+    const name = input.value.trim();
+
+    if (!name) return alert("Enter a course name first!");
+
+    data.courses.push({
+        id: Date.now(),
+        name: name
+    });
+
+    input.value = "";
+    saveData();
+}
+
+function editCourse(id) {
+    const course = data.courses.find(c => c.id === id);
+
+    const newName = prompt("Edit course name:", course.name);
+
+    if (newName && newName.trim()) {
+        course.name = newName.trim();
+        saveData();
+    }
+}
+
+function deleteCourse(id) {
+    if (!confirm("Delete this course and its study records?")) return;
+
+    data.courses = data.courses.filter(c => c.id !== id);
+
+    data.entries = data.entries.filter(e => e.courseId !== id);
+
+    saveData();
+}
+
+
+// DAILY RECORDS
+
+function addEntry() {
+
+    const courseId = Number(
+        document.getElementById("studyCourse").value
+    );
+
+    if (!courseId) {
+        return alert("Please add and select a course first!");
+    }
+
+    const topics =
+        document.getElementById("topics").value.trim();
+
+    const plan =
+        document.getElementById("plan").value.trim();
+
+    const date =
+        document.getElementById("studyDate").value;
+
+    const objectives =
+        document.getElementById("objectives").value
+        .split("\n")
+        .map(x => x.trim())
+        .filter(x => x !== "");
+
+    if (!topics && !plan && objectives.length === 0) {
+        return alert("Please enter something!");
+    }
+
+    data.entries.unshift({
+        id: Date.now(),
+        courseId: courseId,
+        date: date,
+        topics: topics,
+        plan: plan,
+        objectives: objectives.map(text => ({
+            text: text,
+            done: false
+        }))
+    });
+
+    document.getElementById("topics").value = "";
+    document.getElementById("plan").value = "";
+    document.getElementById("objectives").value = "";
+
+    saveData();
+
+    alert("Study record saved successfully! 🎉");
+}
+
+
+// TOGGLE OBJECTIVE
+
+function toggleObjective(entryId, index) {
+
+    const entry = data.entries.find(e => e.id === entryId);
+
+    entry.objectives[index].done =
+        !entry.objectives[index].done;
+
+    saveData();
+}
+
+
+// DELETE RECORD
+
+function deleteEntry(id) {
+
+    if (!confirm("Delete this study record?")) return;
+
+    data.entries = data.entries.filter(e => e.id !== id);
+
+    saveData();
+}
+
+
+// DASHBOARD RENDERING
+
+function render() {
+
+    // COURSE LIST
+
+    document.getElementById("courseList").innerHTML =
+        data.courses.length
+        ? data.courses.map(c => `
+            <div class="course-item">
+                ${escapeHTML(c.name)}
+                <button class="small-btn edit-btn"
+                    onclick="editCourse(${c.id})">Edit</button>
+                <button class="small-btn delete-btn"
+                    onclick="deleteCourse(${c.id})">×</button>
+            </div>
+        `).join("")
+        : '<p class="empty">No courses added yet.</p>';
+
+
+    // COURSE DROPDOWN
+
+    document.getElementById("studyCourse").innerHTML =
+        '<option value="">Choose a course</option>' +
+        data.courses.map(c => `
+            <option value="${c.id}">
+                ${escapeHTML(c.name)}
+            </option>
+        `).join("");
+
+
+    // PROGRESS
+
+    let total = 0;
+    let completed = 0;
+
+    data.entries.forEach(entry => {
+        entry.objectives.forEach(obj => {
+            total++;
+            if (obj.done) completed++;
+        });
+    });
+
+    const percent = total
+        ? Math.round((completed / total) * 100)
+        : 0;
+
+    document.getElementById("totalCourses").innerText =
+        data.courses.length;
+
+    document.getElementById("completedTasks").innerText =
+        completed + "/" + total;
+
+    document.getElementById("overallProgress").innerText =
+        percent + "%";
+
+
+    // STUDY RECORDS
+
+    document.getElementById("entries").innerHTML =
+        data.entries.length
+        ? data.entries.map(entry => {
+
+            const course = data.courses.find(
+                c => c.id === entry.courseId
+            );
+
+            const done = entry.objectives.filter(
+                o => o.done
+            ).length;
+
+            const count = entry.objectives.length;
+
+            const progress = count
+                ? Math.round(done / count * 100)
+                : 0;
+
+            return `
+            <div class="entry">
+
+                <h3>${escapeHTML(course ? course.name : "Course")}</h3>
+
+                <p>📅 ${escapeHTML(entry.date || "No date")}</p>
+
+                <p><b>Topics Covered:</b><br>
+                ${escapeHTML(entry.topics || "Not specified")}</p>
+
+                <p><b>Daily Plan:</b><br>
+                ${escapeHTML(entry.plan || "Not specified")}</p>
+
+                <p><b>Objectives: ${done}/${count} completed</b></p>
+
+                ${entry.objectives.map((obj, index) => `
+                    <div class="objective">
+                        <span class="${obj.done ? 'done' : 'not-done'}">
+                            ${obj.done ? '✓' : '✕'}
+                            ${escapeHTML(obj.text)}
+                        </span>
+
+                        <button
+                            style="background:${obj.done ? '#64748b' : '#16a34a'}"
+                            onclick="toggleObjective(${entry.id},${index})">
+                            ${obj.done ? 'Undo' : 'Mark Done'}
+                        </button>
+                    </div>
+                `).join("")}
+
+                <div class="progress-bg">
+                    <div class="progress-fill"
+                         style="width:${progress}%"></div>
+                </div>
+
+                <p>${progress}% of daily objectives completed</p>
+
+                <button class="small-btn delete-btn"
+                    onclick="deleteEntry(${entry.id})">
+                    Delete Record
+                </button>
+
+            </div>
+            `;
+        }).join("")
+        : '<p class="empty">No study records yet. Start your preparation!</p>';
+}
+
+
+// BASIC HTML ESCAPING
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[char]);
+}
+
+</script>
+
+</body>
+</html>
